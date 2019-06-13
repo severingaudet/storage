@@ -13,9 +13,9 @@ current version uses some experimental changes (compared to the IVOA proposed re
 Creative Commons Attribution-ShareAlike 4.0 International License</a>.
 
 Development starts with the UML diagrams and the current version may be ahead of the VO-DML and documentation. 
-The current UML is <img alt="Storage System UML - development version" style="border-width:0" 
-src="https://github.com/pdowler/storage/raw/master/storage-dm/src/main/resources/inventory.png" />
 
+<img alt="Storage System UML - development version" style="border-width:0" 
+src="https://github.com/pdowler/storage/raw/master/storage-dm/src/main/resources/inventory.png" />
 
 # Entity
 Simplified version of the CaomEntity. An Entity is something 
