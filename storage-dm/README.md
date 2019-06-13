@@ -91,35 +91,35 @@ individual storage sites.
 
 # patterns and incomplete thoughts
 
-* basic put/get/delete
+basic put/get/delete:
 - PUT /srv/files/{fileID}
 - GET /srv/files/{fileID}
 - DELETE /srv/files/{fileID}
 
-* overwrite a file at storage site:
+overwrite a file at storage site:
 - write with new storageID, File.lastModified/metaChecksum changes, global harvests
 - allows users of global transfer negotiation to detect consistency issues if they want to
 - allows storage site to deliver new or previous file until cleanup; cleanup could be after global 
   consistency restored
 
-* how does delete file get propagated?
+how does delete file get propagated?
 - delete from any site with a copy
 - delete by File UUID so it is decoupled from put new file with same name
 - negotiate with global to find a copy to delete, delete one or more copies OK?
 
-* how would a temporary cache instance at a site be maintained?
+how would a temporary cache instance at a site be maintained?
 - site could accept writes to a "cache" instance for File(s) that do not belong
   in it's local "files" resource
 - site could delete files once global has other Location(s)
 - files could sit there orphaned if no one wants them
 
-* how does global inventory validate vs site?  how does site validate vs global (w.r.t. policy)?
+how does global inventory validate vs site?  how does site validate vs global (w.r.t. policy)?
 - when it merges File(s) from sites with new Location(s) the metaChecksum 
   of the File in global will change: global File.metaChecksum != site File.metaChecksum
 - if you query for File+Location where location.id = $site.id you could recompute 
   the metaChecksum of the site... 
 
-* what happens when a storage site detects that a File.contentChecksum != storage.checksum?
+what happens when a storage site detects that a File.contentChecksum != storage.checksum?
 - if copies-in-global: delete the File and the stored file and re-sync w.r.t policy?
 - if !copies-in-global: mark it bad && human intervention
 
