@@ -1,3 +1,9 @@
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+<img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a>
+<br />The Common Archive Observation Model is licensed under the
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+
 # storage-dm
 Storage System Data Model
 
@@ -5,12 +11,6 @@ This module contains a <a href="http://www.ivoa.net/documents/VODML/index.html">
 description of the Storage data model and test code to validate the model using the 
 <a href="https://github.com/opencadc/core/tree/master/cadc-vodml">cadc-vodml</a> tools. The 
 current version uses some experimental changes (compared to the IVOA proposed recommendation).
-
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
-<img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a>
-<br />The Common Archive Observation Model is licensed under the
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
-Creative Commons Attribution-ShareAlike 4.0 International License</a>.
 
 Development starts with the UML diagrams and the current version may be ahead of the VO-DML and documentation. 
 
@@ -39,18 +39,22 @@ to and may be defined by some other system (e.g. an Artifact.uri
 in CAOM). 
 
 {scheme}:{name}/{path}
-ivo://{authority}/{path}?{path}
 
-
-- no query string
-- no fragment
--  the last path component is the "file name"
+ivo://{authority}/{name}?{path}
 
 For URIs of the simple form, the namespace would be {scheme}:{name} and the filename would be the past component of {path}.
 
-For resolvable ivo URIs, the resourceID (of a DataCollection) can be extracted by dropping the query string. The resourceID 
+For resolvable ivo URIs, the resourceID can be extracted by dropping the query string. The resourceID 
 can be found in a registry and allows clients to find data services. This form allows for generic tools to resolve
-and sync files from external systems.
+and sync files from external systems. Example usage of equivalent 
+
+ad:{archive}/{filename} *classic*
+
+cadc:{archive}/{filename} *new*
+
+ivo://cadc.nrc.ca/data?{archive}/{filename} *resolvable data service*
+
+ivo://cadc.nrc.ca/data/{collection}?{archive}/{filename} *resolvable data collection*
 
 Basic archive usage is to use the cadc scheme: cadc:{name}/{path}. The namespace would be "cadc:{name}". Validation of 
 CAOM versus storage requires querying CAOM (1+ collections) and storage (single namespace) and cross-matching URIs to 
