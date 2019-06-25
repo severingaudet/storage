@@ -35,59 +35,63 @@ store it directly in the location.
 
 # File.fileID
 This URI is a globally unique identifier that is typically known 
-to and may be defined by some other system (e.g. Artifact.uri 
-in CAOM, or a VOSpace node URI from vault). 
+to and may be defined by some other system (e.g. an Artifact.uri 
+in CAOM). 
 
-- {scheme}:{path}
-- {scheme}://{authority}/{path}
+{scheme}:{name}/{path}
+ivo://{authority}/{path}?{path}
+
+
 - no query string
 - no fragment
 -  the last path component is the "file name"
 
-Basic archive usage is to use the cadc scheme: cadc:{namespace}/{path}. About namespace: denoting the first 
-path component as special makes sense from an organizational and allocation point of view
+For URIs of the simple form, the namespace would be {scheme}:{name} and the filename would be the past component of {path}.
+
+For resolvable ivo URIs, the resourceID (of a DataCollection) can be extracted by dropping the query string. The resourceID 
+can be found in a registry and allows clients to find data services. This form allows for generic tools to resolve
+and sync files from external systems.
+
+Basic archive usage is to use the cadc scheme: cadc:{name}/{path}. The namespace would be "cadc:{name}". Validation of 
+CAOM versus storage requires querying CAOM (1+ collections) and storage (single namespace) and cross-matching URIs to 
+look for anomolies. 
+
+For externally harvested and sync'ed CAOM artifacts, we would use the URI as-is in the fileID. For the simple form 
+(e.g. mast:HST/path/to/file.fits) the namespace would be "mast:HST". For the resolvable (ivo) form, it is not clear 
+if the whole resourceID would be the namespace or if one might want a single namespace per {authority} in some or all 
+cases. Validation of CAOM versus storage requires querying CAOM (1+ collections) and storage (single namespace) and 
+cross-matching URIs to look for anomolies.
 
 For vault (vospace), data nodes would have a generated identifier and use cadc:vault/{datanode.uuid}.
-This way paths within the vospace don't end up in storage. Validation requires querying vaultdb and 
-building fileID(s).
-
-For externally harvested CAOM artifacts (mast), we would use the URI as-is. Non-cadc scheme URIs would have to
-be treated as different namespace(s); this usage implies that every external Artifact.uri scheme would require 
-a new storage namespace.
-
-Namespace concept seems pretty thin: maybe this is just configuration outside the model?
+This way paths within the vospace don't end up in storage and move operations in vospace do not effect
+the storage system. There should be no use of the "vos" scheme in a fileID. Validation of vault versus storage
+requires querying vault (and building fileID values programmatically unless vaultdb stores the full URI) and storage
+and cross-matching to look for anomolies.
 
 # storage site
-A storage site tracks all files written to local storage. These files 
-can be harvested by anyone: central inventory, clones, backups, etc. 
-A storage site is fully consistent wrt local file operations (e.g. put + get + delete).
+A storage site tracks all files written to local storage. These files can be harvested by anyone: central inventory, 
+clones, backups, etc. A storage site is fully consistent wrt local file operations (e.g. put + get + delete).
 
 Storage sites:
 - track writes of local files
 - implement get/put/delete service API
-- implement policy to harvest File(s) from global that 
-  (local mirror policy)
+- implement policy to sync File(s) from global
 - implement file sync from other sites using global
 - implement validation of file metadata vs storage
 
-A storage site always has 1:1 File->Location with only it's own
-Location(s).
+A storage site always has 1:1 File->Location with only it's own Location.
 
 # global inventory
 A global inventory service is built by harvesting sites, files, and deletions from all known sites.
 A global inventory is eventually consistent.
 
 A global inventory (may be one or more):
-- harvests and merges metadata from storage sites
-  where merge means "add location"
+- harvests and merges metadata from storage sites where merge means "add location"
 - implements transfer negotiation API
 
-Rather than just accumulate new instances of File, the
-harvested File may be a new File or an existing File with
-a new Location that has to be merged into the global
-inventory. Thus, File.metaChecksum and File.lastModified
-in a global inventory are not equal to the values at
-individual storage sites.
+Rather than just accumulate new instances of File, the harvested File may be a new File or an existing File 
+with a new Location that has to be merged into the global inventory. Thus, File.metaChecksum and File.lastModified
+in a global inventory are not equal to the values at individual storage sites.
 
 # patterns and incomplete thoughts
 
