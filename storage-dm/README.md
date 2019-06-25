@@ -46,7 +46,7 @@ For URIs of the simple form, the namespace would be {scheme}:{name} and the file
 
 For resolvable ivo URIs, the resourceID can be extracted by dropping the query string. The resourceID 
 can be found in a registry and allows clients to find data services. This form allows for generic tools to resolve
-and sync files from external systems. Example usage of equivalent 
+and sync files from external systems. Example usage of equivalent fileID values:
 
 ad:{archive}/{filename} *classic*
 
