@@ -5,35 +5,19 @@
 Creative Commons Attribution-ShareAlike 4.0 International License</a>.
 
 # storage-dm
-Storage System Data Model
+Storage Inventory (SI) Data Model
 
 This module contains a <a href="http://www.ivoa.net/documents/VODML/index.html">VO-DML</a> 
 description of the Storage data model and test code to validate the model using the 
-<a href="https://github.com/opencadc/core/tree/master/cadc-vodml">cadc-vodml</a> tools. The 
-current version uses some experimental changes (compared to the IVOA proposed recommendation).
+<a href="https://github.com/opencadc/core/tree/master/cadc-vodml">cadc-vodml</a> tools.
 
-Development starts with the UML diagrams and the current version may be ahead of the VO-DML and documentation. 
+Development starts with the UML diagrams and the current version may be ahead of the 
+<a href="https://github.com/pdowler/storage/blob/master/storage-dm/docs/index.html">SI VO-DML</a> documentation. 
 
 <img alt="Storage System UML - development version" style="border-width:0" 
-src="https://github.com/pdowler/storage/raw/master/storage-dm/src/main/resources/inventory.png" />
+src="https://github.com/pdowler/storage/raw/master/storage-dm/src/main/resources/storage-inventory-0.1.png" />
 
-# Entity
-Simplified version of the CaomEntity. An Entity is something 
-that can be serialised and supports incremental harvesting 
-and validation.
-
-# Site
-A storage site has a "sites" resource with a single entry
-describing itself. A site can change it's resourceID and
-name but must maintain a stable entity.id (UUID).
-
-A global inventory service has an instance of "sites"
-that it harvests from storage sites that it finds via a
-registry query. This is a small and pretty static list but
-sites may change resourceID so we do not want to
-store it directly in the location.
-
-# File.fileID
+# File.fileID thoughts...
 This URI is a globally unique identifier that is typically known 
 to and may be defined by some other system (e.g. an Artifact.uri 
 in CAOM). 
@@ -52,9 +36,9 @@ ad:{archive}/{filename} *classic*
 
 cadc:{archive}/{filename} *new*
 
-ivo://cadc.nrc.ca/data?{archive}/{filename} *resolvable data service*
+ivo://cadc.nrc.ca/data?{archive}/{filename} *resolvable data service?*
 
-ivo://cadc.nrc.ca/data/{collection}?{archive}/{filename} *resolvable data collection*
+ivo://cadc.nrc.ca/data/{collection}?{archive}/{filename} *resolvable data collection?*
 
 Basic archive usage is to use the cadc scheme: cadc:{name}/{path}. The namespace would be "cadc:{name}". Validation of 
 CAOM versus storage requires querying CAOM (1+ collections) and storage (single namespace) and cross-matching URIs to 
@@ -80,22 +64,28 @@ Storage sites:
 - track writes of local files
 - implement get/put/delete service API
 - implement policy to sync File(s) from global
-- implement file sync from other sites using global
+- implement file sync from other sites using global transfer negotiation
 - implement validation of file metadata vs storage
 
 A storage site always has 1:1 File->Location with only it's own Location.
+
+<img alt="storage site deployment" style="border-width:0" 
+src="https://github.com/pdowler/storage/raw/master/storage-dm/docs/storage-site-deploy.png" />
 
 # global inventory
 A global inventory service is built by harvesting sites, files, and deletions from all known sites.
 A global inventory is eventually consistent.
 
-A global inventory (may be one or more):
+Global inventory (may be one or more):
 - harvests and merges metadata from storage sites where merge means "add location"
 - implements transfer negotiation API
 
 Rather than just accumulate new instances of File, the harvested File may be a new File or an existing File 
 with a new Location that has to be merged into the global inventory. Thus, File.metaChecksum and File.lastModified
 in a global inventory are not equal to the values at individual storage sites.
+
+<img alt="global storage inventory deployment" style="border-width:0" 
+src="https://github.com/pdowler/storage/raw/master/storage-dm/docs/global-inventory-deploy.png" />
 
 # patterns and incomplete thoughts
 
