@@ -18,15 +18,16 @@ Development starts with the UML diagrams and the current version may be ahead of
 src="https://github.com/pdowler/storage/raw/master/storage-dm/src/main/resources/storage-inventory-0.1.png" />
 
 # File.fileID thoughts...
-This URI is a globally unique identifier that is typically known 
-to and may be defined by some other system (e.g. an Artifact.uri 
-in CAOM). 
+This URI is a globally unique identifier that is typically known to and may be defined by some other system 
+(e.g. an Artifact.uri in CAOM or storageID in a storage-system backed VOSpace like ivo://cadc.nrc.ca/vault). 
 
-{scheme}:{name}/{path}
+{scheme}:{path}
 
 ivo://{authority}/{name}?{path}
 
-For URIs of the simple form, the namespace would be {scheme}:{name} and the filename would be the past component of {path}.
+For all URIs, the filename would be the last component of {path}. There is no explicit namespace: arbitrary sets of files
+can be defined with a prefix-pattern match on fileID. Such sets of files would be used in validation and in site mirroring 
+policies.
 
 For resolvable ivo URIs, the resourceID can be extracted by dropping the query string. The resourceID 
 can be found in a registry and allows clients to find data services. This form allows for generic tools to resolve
@@ -34,9 +35,9 @@ and sync files from external systems. Example usage of equivalent fileID values:
 
 ad:{archive}/{filename} *classic*
 
-cadc:{archive}/{filename} *new*
+cadc:{archive}/{filename} *new but still flat*
 
-ivo://cadc.nrc.ca/data?{archive}/{filename} *resolvable data service*
+ivo://cadc.nrc.ca/data?{archive}/{filename} *resolvable data service but still flat*
 
 Basic archive usage is to use the cadc scheme: cadc:{path} where the path would contain {archive}/{filename} if we
 want/need to match the current flat structure. Validation of CAOM versus storage requires querying CAOM (one or 
