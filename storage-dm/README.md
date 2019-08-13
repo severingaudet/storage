@@ -36,25 +36,24 @@ ad:{archive}/{filename} *classic*
 
 cadc:{archive}/{filename} *new*
 
-ivo://cadc.nrc.ca/data?{archive}/{filename} *resolvable data service?*
+ivo://cadc.nrc.ca/data?{archive}/{filename} *resolvable data service*
 
-ivo://cadc.nrc.ca/data/{collection}?{archive}/{filename} *resolvable data collection?*
+Basic archive usage is to use the cadc scheme: cadc:{path} where the path would contain {archive}/{filename} if we
+want/need to match the current flat structure. Validation of CAOM versus storage requires querying CAOM (one or 
+more collections) and storage (prefix-pattern match on fileID) and cross-matching URIs to look for anomolies. 
 
-Basic archive usage is to use the cadc scheme: cadc:{name}/{path}. The namespace would be "cadc:{name}". Validation of 
-CAOM versus storage requires querying CAOM (1+ collections) and storage (single namespace) and cross-matching URIs to 
-look for anomolies. 
+For externally harvested and sync'ed CAOM artifacts, we would use the URI as-is in the fileID
+(e.g. mast:HST/path/to/file.fits). Validation of CAOM versus storage requires querying CAOM (one or more collections) 
+and storage (prefix-pattern match on fileID) and cross-matching URIs to look for anomolies.
 
-For externally harvested and sync'ed CAOM artifacts, we would use the URI as-is in the fileID. For the simple form 
-(e.g. mast:HST/path/to/file.fits) the namespace would be "mast:HST". For the resolvable (ivo) form, it is not clear 
-if the whole resourceID would be the namespace or if one might want a single namespace per {authority} in some or all 
-cases. Validation of CAOM versus storage requires querying CAOM (1+ collections) and storage (single namespace) and 
-cross-matching URIs to look for anomolies.
+For the resolvable (ivo) form, the service would provide one or more file-access APIs (transfer negotiation and/or
+simple URL). This sort of usage means less code on the client side to work with more data providers, unlike the custom
+scheme approach currently used in CAOM).
 
-For vault (vospace), data nodes would have a generated identifier and use cadc:vault/{datanode.uuid}.
+For vault (vospace), data nodes would have a generated identifier (e.g. cadc:vault/{uuid}).
 This way paths within the vospace don't end up in storage and move operations in vospace do not effect
 the storage system. There should be no use of the "vos" scheme in a fileID. Validation of vault versus storage
-requires querying vault (and building fileID values programmatically unless vaultdb stores the full URI) and storage
-and cross-matching to look for anomolies.
+requires querying vault (and building fileID values programmatically unless vaultdb stores the full URI) and storage (prefix-pattern match on fileID) and cross-matching to look for anomolies.
 
 # storage site
 A storage site tracks all files written to local storage. These files can be harvested by anyone: central inventory, 
