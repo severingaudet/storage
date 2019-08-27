@@ -49,12 +49,10 @@ permission service (for that archive); the second form is the resolvable version
 Validation of CAOM versus storage requires querying CAOM (1+ collections) and storage (single namespace) and 
 cross-matching URIs to look for anomolies.
 
-For vault (vospace), data nodes would have a generated identifier and use something like ivo://cadc.nrc.ca/vault?{uuid}
-or vault:{uuid}. For the latter, storage sites would require configuration to support the shortcut (as would other
-instances). There should be no use of the "vos" scheme in a fileID so paths within the vospace never get used in storage and
-move/rename operations (container or data nodes) do not effect the storage system.  Validation of vault versus storage
-requires querying vault (and building fileID values programmatically unless vaultdb stores the full URI) and storage
-and cross-matching to look for anomolies.
+For vault (vospace), data nodes would have a generated identifier and use something like 
+ivo://cadc.nrc.ca/vault?{uuid}/{filename} or vault:{uuid}/{filename}. For the latter, storage sites would require
+configuration to support the shortcut (as would other instances). There should be no use of the "vos" scheme in a fileID so paths within the vospace never get used in storage and move/rename operations (container or data nodes) do not effect the storage system.  Validation of vault versus storage requires querying vault (and building fileID values programmatically unless
+vaultdb stores the full URI) and storage and cross-matching to look for anomolies.
 
 Since we need to support mast and vault schemes (at least), it is assumed that we would use the "cadc" going forward and support 
 (configure) the "ad" scheme for backwards compatibility. 
