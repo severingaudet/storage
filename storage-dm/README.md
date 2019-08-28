@@ -54,8 +54,8 @@ ivo://cadc.nrc.ca/vault?{uuid}/{filename} or vault:{uuid}/{filename}. For the la
 configuration to support the shortcut (as would other instances). There should be no use of the "vos" scheme in a fileID so paths within the vospace never get used in storage and move/rename operations (container or data nodes) do not effect the storage system.  Validation of vault versus storage requires querying vault (and building fileID values programmatically unless
 vaultdb stores the full URI) and storage and cross-matching to look for anomolies.
 
-Since we need to support mast and vault schemes (at least), it is assumed that we would use the "cadc" going forward and support 
-(configure) the "ad" scheme for backwards compatibility. 
+Since we need to support mast and vault schemes (at least), it is assumed that we would use the "cadc" scheme going 
+forward and support (configure) the "ad" scheme for backwards compatibility. 
 
 # external services
 Services that make up the storage site or global inventory depend on other CADC services.
