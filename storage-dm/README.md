@@ -95,7 +95,7 @@ at a new site that has to be merged into the global inventory. Thus, File.lastMo
 equal to the values at individual storage sites; it is the last time the global state of that file changed (by
 being sync'ed to a storage site).
 
-The matadata-sync tools could allow for global policy so one could maintain a global view of a defined set of file. This
+The metadata-sync tools could allow for global policy so one could maintain a global view of a defined set of file. This
 might be useful so vault could maintain it's own global view and not rely on an external global inventory service for 
 transfer negotiation.
 
