@@ -15,7 +15,7 @@ Development starts with the UML diagrams and the current version may be ahead of
 <a href="https://github.com/pdowler/storage/blob/master/storage-dm/docs/index.html">SI VO-DML</a> documentation. 
 
 <img alt="Storage System UML - development version" style="border-width:0" 
-src="https://github.com/pdowler/storage/raw/master/storage-dm/src/main/resources/storage-inventory-0.1.png" />
+src="https://github.com/pdowler/storage/raw/master/storage-dm/src/main/resources/storage-inventory-0.2.png" />
 
 # File.fileID thoughts...
 This URI is a globally unique identifier that is typically known to and may be defined by some other system 
@@ -58,7 +58,7 @@ Since we need to support mast and vault schemes (at least), it is assumed that w
 forward and support (configure) the "ad" scheme for backwards compatibility. 
 
 # external services
-Services that make up the storage site or global inventory depend on other CADC services.
+Services that make up the storage site or global inventory depend on other CADC services. The registry lookup API permits caching; this is already implemented and effective. The permissions API could be designed to support caching. The user and group APIs could be modified to support caching. Caching: solve a problem by adding another problem.
 
 <img alt="storage site deployment" style="border-width:0" 
 src="https://github.com/pdowler/storage/raw/master/storage-dm/docs/storage-external-services.png" />
@@ -68,13 +68,15 @@ A storage site tracks all files written to local storage. These files can be har
 clones, backups, etc. A storage site is fully consistent w.r.t local file operations (e.g. put + get + delete).
 
 Storage sites:
-- track writes of local files
+- track writes of local files (persist File + StorageLocation)
 - implement get/put/delete service API
 - implement policy to sync File(s) from global
 - implement file sync from other sites using global transfer negotiation
 - implement validation of file metadata vs storage
 
-A storage site always has 1:1 File->Location with only it's own Location.
+A storage site maintains StorageLocation->File for File(s) in local storage. Local policy syncs a subset of File(s)
+from global; new File(s) from other sites would have no matching StorageLocation and file-sync would know to retrieve
+the file. Local put creates the StorageLocation directly.
 
 <img alt="storage site deployment" style="border-width:0" 
 src="https://github.com/pdowler/storage/raw/master/storage-dm/docs/storage-site-deploy.png" />
@@ -84,12 +86,18 @@ A global inventory service is built by harvesting sites, files, and deletions fr
 A global inventory is eventually consistent.
 
 Global inventory (may be one or more):
-- harvests and merges metadata from storage sites where merge means "add location"
+- harvests Site metadata from storage sites
+- harvests File + DeletedFile metadata/events from storage sites (persist File + SiteLocation)
 - implements transfer negotiation API
 
 Rather than just accumulate new instances of File, the harvested File may be a new File or an existing File 
-with a new Location that has to be merged into the global inventory. Thus, File.metaChecksum and File.lastModified
-in a global inventory are not equal to the values at individual storage sites.
+at a new site that has to be merged into the global inventory. Thus, File.lastModified in a global inventory is not 
+equal to the values at individual storage sites; it is the last time the global state of that file changed (by
+being sync'ed to a storage site).
+
+The matadata-sync tools could allow for global policy so one could maintain a global view of a defined set of file. This
+might be useful so vault could maintain it's own global view and not rely on an external global inventory service for 
+transfer negotiation.
 
 <img alt="global storage inventory deployment" style="border-width:0" 
 src="https://github.com/pdowler/storage/raw/master/storage-dm/docs/global-inventory-deploy.png" />
@@ -97,42 +105,61 @@ src="https://github.com/pdowler/storage/raw/master/storage-dm/docs/global-invent
 # patterns and incomplete thoughts
 
 basic put/get/delete:
-- PUT /srv/files/{fileID}
-- GET /srv/files/{fileID}
-- DELETE /srv/files/{fileID}
-- cannot directly access vault files at a site - must use transfer negotiation
+- PUT /srv/files/{uri}
+- GET /srv/files/{uri}
+- DELETE /srv/files/{uri}
+- cannot modify File.uri without delete+put with new uri (chose wisely)
+- mirroring policy at sites will be based on information in the File.uri (chose wisely)
+- cannot directly access vault files at a site - must use transfer negotiation (no real change)
 - vault transfer negotiation maps vos {path} to DataNode.uuid and then negotiates with global storage inventory
+- vault implementation could maintain it's own global inventory of vault files
+
+negotiated transfers:
+- negotiate with global to get: locate available copies and return URL(s), order by proximity
+- negotiate with global to put: sites that are writable, order by proximity; try to match policy?
+- negotiate with global to delete: same as get
+- global should implement heartbeat check with sites so negotiated transfers likely to work
 
 overwrite a file at storage site:
 - write with new File UUID, File.lastModified/metaChecksum must change, global harvests, sites harvest
-- add DeletedFile record
-- allows users of global transfer negotiation to detect consistency issues if they want to
-- allows storage site to deliver new or previous file until cleanup; cleanup could be after global 
-  consistency restored
+- add DeletedFile record for old UUID
+- before global harvests: eventually consistent (but detectable by clients in principle)
+- after global harvests: consistent (only new file accessible, sites limited until sync'ed
+- direct access: other storage sites would deliver previous version of file until they sync
 - race condition - put at two sites -> two File(s) with same fileID but different id: keep max(File.lastModified)
 
 how does delete file get propagated?
-- delete from any site with a copy; delete harvested to global and the to other sites
+- delete from any site with a copy; delete harvested to global and then to other sites
 - process harvested delete by File UUID so it is decoupled from put new file with same name
-- negotiate with global to find a copy to delete, delete one or more copies OK?
-- race condition - delete and put at different sites: the put wins
+- negotiate with global to find a copy to delete, delete one or more copies
+- race condition - delete and put at different sites: the put always wins
+- delete by File UUID is idempotent so duplicate DeletedFile records are ok
+
+how does global learn about copies at sites other than the original?
+- when a site syncs a file (adds a local StorageLocation): update the File.lastModified
+- global metadata-sync from site(s) will see this, retrieve the File, and add a local SiteLocation
+- the File.id and File.metaChecksum never change during sync
+- global's view of the File.lastModified will be the latest change at all sites, but that doesn't stop it from getting an
+  "event" out of order and still merging in the new SiteLocation
 
 how would a temporary cache instance at a site be maintained?
-- site could accept writes to a "cache" instance for File(s) that do not belong
-  in it's local "files" resource
-- site could delete files once global has other Location(s)
-- files could sit there orphaned if no one wants them
+- site could accept writes to a "cache" instance for File(s) that do not match local policy
+- site could delete once global has other SiteLocation(s), update File.lastModified so global will detect 
+  and remove SiteLocation
+- files could sit there orphaned if no one else wants/copies them
 
 how does global inventory validate vs site?  how does site validate vs global (w.r.t. policy)?
-- when it merges File(s) from sites with new Location(s) the metaChecksum 
-  of the File in global will change: global File.metaChecksum != site File.metaChecksum
-- if you query for File+Location where location.id = $site.id you could recompute 
-  the metaChecksum of the site... 
+- get list of File(s) from the site and compare with File+SiteLocation
+- add missing File(s)
+- add misssing SiteLocation(s)
+- remove orphaned SiteLocation(s)
+- remove File(s) with no SiteLocation??
+- use uriBucket prefix to batch validation
 
 what happens when a storage site detects that a File.contentChecksum != storage.checksum?
 - if copies-in-global: delete the File and the stored file and re-sync w.r.t policy?
 - if !copies-in-global: mark it bad && human intervention
 
 harvesting (global) should detect if site File.lastModified stream is out of whack
-- non-monotonic
+- non-monotonic, except for volatile head of stack?
 - clock skew

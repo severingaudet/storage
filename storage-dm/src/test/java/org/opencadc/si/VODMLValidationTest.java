@@ -90,9 +90,10 @@ public class VODMLValidationTest {
     private static final Logger log = Logger.getLogger(VODMLValidationTest.class);
 
     private static final String VODML_FILE_01 = "storage-inventory-0.1-vodml.xml";
+    private static final String VODML_FILE_02 = "storage-inventory-0.2-vodml.xml";
 
     private static final String[] VODML_FILES = new String[]{
-        VODML_FILE_01
+        VODML_FILE_01, VODML_FILE_02
     };
 
     static {

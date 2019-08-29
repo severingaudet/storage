@@ -64,11 +64,15 @@
             </tr>
             <tr>
                <td>2.2.4</td>
-               <td>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Location">objectType: Location</a></td>
+               <td>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Site">objectType: Site</a></td>
             </tr>
             <tr>
                <td>2.2.5</td>
-               <td>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Site">objectType: Site</a></td>
+               <td>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#SiteLocation">objectType: SiteLocation</a></td>
+            </tr>
+            <tr>
+               <td>2.2.6</td>
+               <td>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#StorageLocation">objectType: StorageLocation</a></td>
             </tr>
             <tr>
                <td>3.</td>
@@ -121,14 +125,14 @@
          <tr>
             <td align="right"><b>Version</b></td>
             <td> : </td>
-            <td>0.1</td>
+            <td>0.2</td>
          </tr>
          <tr>
             <td align="right" valign="top"><b>Description</b></td>
             <td valign="top"> : </td>
             <td>a general purpose data model for managing storage inventory</td>
          </tr>
-      </table><img src="storage-inventory-0.1.png"><hr>
+      </table><img src="storage-inventory-0.2.png"><hr>
       <h1>2.<a name="packages">Model contents: Packages and Types</a></h1>
       <p>
          The following sub-sections present all packages in the model with their types.
@@ -183,7 +187,7 @@
          </tr>
          <tr>
             <td width="20%" class="info-title">Object types</td>
-            <td colspan="2" class="feature-detail"><a href="#DeletedFile">DeletedFile</a> <a href="#Entity">Entity</a> <a href="#File">File</a> <a href="#Location">Location</a> <a href="#Site">Site</a> 
+            <td colspan="2" class="feature-detail"><a href="#DeletedFile">DeletedFile</a> <a href="#Entity">Entity</a> <a href="#File">File</a> <a href="#Site">Site</a> <a href="#SiteLocation">SiteLocation</a> <a href="#StorageLocation">StorageLocation</a> 
             </td>
          </tr>
       </table>
@@ -262,13 +266,13 @@
                                  <td class="feature-heading" width="70%">value</td>
                               </tr>
                               <tr>
-                                 <td class="feature-detail" valign="top" rowspan="4"><a name="StorageEntity.id"></a><b>id</b></td>
+                                 <td class="feature-detail" valign="top" rowspan="4"><a name="Entity.id"></a><b>id</b></td>
                                  <td class="feature-heading">type</td>
                                  <td class="feature-detail"><a href="#uuid">uuid [si:uuid]</a></td>
                               </tr>
                               <tr>
                                  <td class="feature-heading">vodml-id</td>
-                                 <td class="feature-detail">StorageEntity.id</td>
+                                 <td class="feature-detail">Entity.id</td>
                               </tr>
                               <tr>
                                  <td class="feature-heading">multiplicity</td>
@@ -361,13 +365,13 @@
                                  <td class="feature-heading" width="70%">value</td>
                               </tr>
                               <tr>
-                                 <td class="feature-detail" valign="top" rowspan="4"><a name="File.fileID"></a><b>uri</b></td>
+                                 <td class="feature-detail" valign="top" rowspan="4"><a name="File.uri"></a><b>uri</b></td>
                                  <td class="feature-heading">type</td>
                                  <td class="feature-detail"><a href="#ivoa">ivoa</a>:<a href="https://volute.g-vo.org/svn/trunk/projects/dm/vo-dml/models/ivoa/vo-dml/IVOA-v1.0.html#anyURI">anyURI</a></td>
                               </tr>
                               <tr>
                                  <td class="feature-heading">vodml-id</td>
-                                 <td class="feature-detail">File.fileID</td>
+                                 <td class="feature-detail">File.uri</td>
                               </tr>
                               <tr>
                                  <td class="feature-heading">multiplicity</td>
@@ -376,6 +380,46 @@
                               <tr>
                                  <td class="feature-heading">description</td>
                                  <td class="feature-detail">an globally uniquer external identifier for the file</td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-detail" valign="top" rowspan="4"><a name="File.uriBucket"></a><b>uriBucket</b></td>
+                                 <td class="feature-heading">type</td>
+                                 <td class="feature-detail"><a href="#ivoa">ivoa</a>:<a href="https://volute.g-vo.org/svn/trunk/projects/dm/vo-dml/models/ivoa/vo-dml/IVOA-v1.0.html#string">string</a></td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-heading">vodml-id</td>
+                                 <td class="feature-detail">File.uriBucket</td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-heading">multiplicity</td>
+                                 <td class="feature-detail">1</td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-heading">description</td>
+                                 <td class="feature-detail">a short 5-8 letter code generated from the uri so that validation code can 
+                                    work in batches; the code could be generated by taking the first N characters from
+                                    the MD5
+                                    checksum of the uri (details TBD)
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-detail" valign="top" rowspan="4"><a name="File.contentChecksum"></a><b>contentChecksum</b></td>
+                                 <td class="feature-heading">type</td>
+                                 <td class="feature-detail"><a href="#ivoa">ivoa</a>:<a href="https://volute.g-vo.org/svn/trunk/projects/dm/vo-dml/models/ivoa/vo-dml/IVOA-v1.0.html#anyURI">anyURI</a></td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-heading">vodml-id</td>
+                                 <td class="feature-detail">File.contentChecksum</td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-heading">multiplicity</td>
+                                 <td class="feature-detail">1</td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-heading">description</td>
+                                 <td class="feature-detail">the checksum of the artifact data; 
+                                    the URI must conform to the pattern {algorithm}:{value}, for example: md5:4be91751541fd804e7207663a0822f56
+                                 </td>
                               </tr>
                               <tr>
                                  <td class="feature-detail" valign="top" rowspan="4"><a name="File.contentLastModified"></a><b>contentType</b></td>
@@ -412,25 +456,6 @@
                                  <td class="feature-detail">the size of the resolved artifact; file size in bytes</td>
                               </tr>
                               <tr>
-                                 <td class="feature-detail" valign="top" rowspan="4"><a name="File.contentChecksum"></a><b>contentChecksum</b></td>
-                                 <td class="feature-heading">type</td>
-                                 <td class="feature-detail"><a href="#ivoa">ivoa</a>:<a href="https://volute.g-vo.org/svn/trunk/projects/dm/vo-dml/models/ivoa/vo-dml/IVOA-v1.0.html#anyURI">anyURI</a></td>
-                              </tr>
-                              <tr>
-                                 <td class="feature-heading">vodml-id</td>
-                                 <td class="feature-detail">File.contentChecksum</td>
-                              </tr>
-                              <tr>
-                                 <td class="feature-heading">multiplicity</td>
-                                 <td class="feature-detail">1</td>
-                              </tr>
-                              <tr>
-                                 <td class="feature-heading">description</td>
-                                 <td class="feature-detail">the checksum of the artifact data; 
-                                    the URI must conform to the pattern {algorithm}:{value}, for example: md5:4be91751541fd804e7207663a0822f56
-                                 </td>
-                              </tr>
-                              <tr>
                                  <td class="feature-detail" valign="top" rowspan="4"><a name="File.contentType"></a><b>contentType</b></td>
                                  <td class="feature-heading">type</td>
                                  <td class="feature-detail"><a href="#ivoa">ivoa</a>:<a href="https://volute.g-vo.org/svn/trunk/projects/dm/vo-dml/models/ivoa/vo-dml/IVOA-v1.0.html#string">string</a></td>
@@ -464,35 +489,6 @@
                                  <td class="feature-heading">description</td>
                                  <td class="feature-detail">label specifying the encoding of the file; typically a compression type</td>
                               </tr>
-                              <tr>
-                                 <td colspan="3" class="info-title">compositions</td>
-                              </tr>
-                              <tr>
-                                 <td class="feature-heading" width="20%">name</td>
-                                 <td class="feature-heading" width="10%">feature</td>
-                                 <td class="feature-heading" width="70%">value</td>
-                              </tr>
-                              <tr>
-                                 <td class="feature-detail" valign="top" rowspan="5"><a name="File.locations"></a><b>locations</b></td>
-                                 <td class="feature-heading">type</td>
-                                 <td class="feature-detail"><a href="#Location">Location [si:Location]</a></td>
-                              </tr>
-                              <tr>
-                                 <td class="feature-heading">vodml-id</td>
-                                 <td class="feature-detail">File.locations</td>
-                              </tr>
-                              <tr>
-                                 <td class="feature-heading">multiplicity</td>
-                                 <td class="feature-detail">0..*</td>
-                              </tr>
-                              <tr>
-                                 <td class="feature-heading">isOrdered</td>
-                                 <td class="feature-detail">false</td>
-                              </tr>
-                              <tr>
-                                 <td class="feature-heading">description</td>
-                                 <td class="feature-detail">the locations of this file</td>
-                              </tr>
                            </table>
                         </td>
                      </tr>
@@ -500,78 +496,7 @@
                </td>
             </tr>
          </table>
-      </div><br><h3><a name="Location"></a>2.2.4 objectType: Location
-      </h3>
-      <div align="center">
-         <table border="1" width="100%" cellspacing="2">
-            <tr>
-               <td class="objecttype-title" width="20%">vodml-id</td>
-               <td class="objecttype-name" colspan="1">Location</td>
-            </tr>
-            <tr>
-               <td class="info-title">description</td>
-               <td class="feature-detail" colspan="1">storage location of a file</td>
-            </tr>
-            <tr>
-               <td colspan="2">
-                  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                     <tr>
-                        <td colspan="2" bgcolor="#cacaca">
-                           <table width="100%" border="0" cellpadding="3" cellspacing="1">
-                              <tr>
-                                 <td width="20%" class="info-title">package</td>
-                                 <td colspan="3" class="feature-detail"><a href="#si">si</a></td>
-                              </tr>
-                              <tr>
-                                 <td colspan="3" class="info-title">attributes</td>
-                              </tr>
-                              <tr>
-                                 <td class="feature-heading" width="20%">name</td>
-                                 <td class="feature-heading" width="10%">feature</td>
-                                 <td class="feature-heading" width="70%">value</td>
-                              </tr>
-                              <tr>
-                                 <td class="feature-detail" valign="top" rowspan="4"><a name="Location.storageID"></a><b>storageID</b></td>
-                                 <td class="feature-heading">type</td>
-                                 <td class="feature-detail"><a href="#ivoa">ivoa</a>:<a href="https://volute.g-vo.org/svn/trunk/projects/dm/vo-dml/models/ivoa/vo-dml/IVOA-v1.0.html#string">string</a></td>
-                              </tr>
-                              <tr>
-                                 <td class="feature-heading">vodml-id</td>
-                                 <td class="feature-detail">Location.storageID</td>
-                              </tr>
-                              <tr>
-                                 <td class="feature-heading">multiplicity</td>
-                                 <td class="feature-detail">1</td>
-                              </tr>
-                              <tr>
-                                 <td class="feature-heading">description</td>
-                                 <td class="feature-detail">storage site specific unique identifier</td>
-                              </tr>
-                              <tr>
-                                 <td class="feature-detail" valign="top" rowspan="4"><a name="Location.site"></a><b>site</b></td>
-                                 <td class="feature-heading">type</td>
-                                 <td class="feature-detail"><a href="#ivoa">ivoa</a>:<a href="https://volute.g-vo.org/svn/trunk/projects/dm/vo-dml/models/ivoa/vo-dml/IVOA-v1.0.html#anyURI">anyURI</a></td>
-                              </tr>
-                              <tr>
-                                 <td class="feature-heading">vodml-id</td>
-                                 <td class="feature-detail">Location.site</td>
-                              </tr>
-                              <tr>
-                                 <td class="feature-heading">multiplicity</td>
-                                 <td class="feature-detail">0..1</td>
-                              </tr>
-                              <tr>
-                                 <td class="feature-heading">description</td>
-                                 <td class="feature-detail">reference to a storage site</td>
-                              </tr>
-                           </table>
-                        </td>
-                     </tr>
-                  </table>
-               </td>
-            </tr>
-         </table>
-      </div><br><h3><a name="Site"></a>2.2.5 objectType: Site
+      </div><br><h3><a name="Site"></a>2.2.4 objectType: Site
       </h3>
       <div align="center">
          <table border="1" width="100%" cellspacing="2">
@@ -642,6 +567,148 @@
                </td>
             </tr>
          </table>
+      </div><br><h3><a name="SiteLocation"></a>2.2.5 objectType: SiteLocation
+      </h3>
+      <div align="center">
+         <table border="1" width="100%" cellspacing="2">
+            <tr>
+               <td class="objecttype-title" width="20%">vodml-id</td>
+               <td class="objecttype-name" colspan="1">SiteLocation</td>
+            </tr>
+            <tr>
+               <td class="info-title">description</td>
+               <td class="feature-detail" colspan="1">location of a file at a site; instances are created and maintained in a global inventory</td>
+            </tr>
+            <tr>
+               <td colspan="2">
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                     <tr>
+                        <td colspan="2" bgcolor="#cacaca">
+                           <table width="100%" border="0" cellpadding="3" cellspacing="1">
+                              <tr>
+                                 <td width="20%" class="info-title">package</td>
+                                 <td colspan="3" class="feature-detail"><a href="#si">si</a></td>
+                              </tr>
+                              <tr>
+                                 <td colspan="3" class="info-title">attributes</td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-heading" width="20%">name</td>
+                                 <td class="feature-heading" width="10%">feature</td>
+                                 <td class="feature-heading" width="70%">value</td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-detail" valign="top" rowspan="4"><a name="SiteLocation.file"></a><b>site</b></td>
+                                 <td class="feature-heading">type</td>
+                                 <td class="feature-detail"><a href="#uuid">uuid [si:uuid]</a></td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-heading">vodml-id</td>
+                                 <td class="feature-detail">SiteLocation.file</td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-heading">multiplicity</td>
+                                 <td class="feature-detail">1</td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-heading">description</td>
+                                 <td class="feature-detail">reference to the file</td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-detail" valign="top" rowspan="4"><a name="SiteLocation.site"></a><b>site</b></td>
+                                 <td class="feature-heading">type</td>
+                                 <td class="feature-detail"><a href="#uuid">uuid [si:uuid]</a></td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-heading">vodml-id</td>
+                                 <td class="feature-detail">SiteLocation.site</td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-heading">multiplicity</td>
+                                 <td class="feature-detail">1</td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-heading">description</td>
+                                 <td class="feature-detail">reference to the site</td>
+                              </tr>
+                           </table>
+                        </td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
+      </div><br><h3><a name="StorageLocation"></a>2.2.6 objectType: StorageLocation
+      </h3>
+      <div align="center">
+         <table border="1" width="100%" cellspacing="2">
+            <tr>
+               <td class="objecttype-title" width="20%">vodml-id</td>
+               <td class="objecttype-name" colspan="1">StorageLocation</td>
+            </tr>
+            <tr>
+               <td class="info-title">description</td>
+               <td class="feature-detail" colspan="1">storage location of a file; instances are created and maintained in a storage site</td>
+            </tr>
+            <tr>
+               <td colspan="2">
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                     <tr>
+                        <td colspan="2" bgcolor="#cacaca">
+                           <table width="100%" border="0" cellpadding="3" cellspacing="1">
+                              <tr>
+                                 <td width="20%" class="info-title">package</td>
+                                 <td colspan="3" class="feature-detail"><a href="#si">si</a></td>
+                              </tr>
+                              <tr>
+                                 <td colspan="3" class="info-title">attributes</td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-heading" width="20%">name</td>
+                                 <td class="feature-heading" width="10%">feature</td>
+                                 <td class="feature-heading" width="70%">value</td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-detail" valign="top" rowspan="4"><a name="StorageLocation.storageID"></a><b>storageID</b></td>
+                                 <td class="feature-heading">type</td>
+                                 <td class="feature-detail"><a href="#ivoa">ivoa</a>:<a href="https://volute.g-vo.org/svn/trunk/projects/dm/vo-dml/models/ivoa/vo-dml/IVOA-v1.0.html#anyURI">anyURI</a></td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-heading">vodml-id</td>
+                                 <td class="feature-detail">StorageLocation.storageID</td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-heading">multiplicity</td>
+                                 <td class="feature-detail">1</td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-heading">description</td>
+                                 <td class="feature-detail">storage site/system internal identifier</td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-detail" valign="top" rowspan="4"><a name="StorageLocation.file"></a><b>site</b></td>
+                                 <td class="feature-heading">type</td>
+                                 <td class="feature-detail"><a href="#uuid">uuid [si:uuid]</a></td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-heading">vodml-id</td>
+                                 <td class="feature-detail">StorageLocation.file</td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-heading">multiplicity</td>
+                                 <td class="feature-detail">1</td>
+                              </tr>
+                              <tr>
+                                 <td class="feature-heading">description</td>
+                                 <td class="feature-detail">reference to the file</td>
+                              </tr>
+                           </table>
+                        </td>
+                     </tr>
+                  </table>
+               </td>
+            </tr>
+         </table>
       </div><br><hr>
       <h1>3.<a name="vodml-ids">Element Identifiers/VO-DMLrefs</a></h1>  
       The following table shows all fully qualified vodml-ids for this data model.
@@ -683,7 +750,7 @@
             </td>
          </tr>
          <tr>
-            <td class="feature-detail"><a href="#StorageEntity.id">StorageEntity.id</a></td>
+            <td class="feature-detail"><a href="#Entity.id">Entity.id</a></td>
             <td class="feature-detail">attribute</td>
             <td class="feature-detail">globally unique identifier (primary key)</td>
          </tr>
@@ -737,29 +804,18 @@
             <td class="feature-detail">label specifying the format of the resolved artifact; typically a MIME-type</td>
          </tr>
          <tr>
-            <td class="feature-detail"><a href="#File.locations">File.locations</a></td>
-            <td class="feature-detail">composition</td>
-            <td class="feature-detail">the locations of this file</td>
-         </tr>
-         <tr>
-            <td class="feature-detail"><a href="#File.fileID">File.fileID</a></td>
+            <td class="feature-detail"><a href="#File.uri">File.uri</a></td>
             <td class="feature-detail">attribute</td>
             <td class="feature-detail">an globally uniquer external identifier for the file</td>
          </tr>
          <tr>
-            <td class="feature-detail"><a href="#Location">Location</a></td>
-            <td class="feature-detail">objectType</td>
-            <td class="feature-detail">storage location of a file</td>
-         </tr>
-         <tr>
-            <td class="feature-detail"><a href="#Location.site">Location.site</a></td>
+            <td class="feature-detail"><a href="#File.uriBucket">File.uriBucket</a></td>
             <td class="feature-detail">attribute</td>
-            <td class="feature-detail">reference to a storage site</td>
-         </tr>
-         <tr>
-            <td class="feature-detail"><a href="#Location.storageID">Location.storageID</a></td>
-            <td class="feature-detail">attribute</td>
-            <td class="feature-detail">storage site specific unique identifier</td>
+            <td class="feature-detail">a short 5-8 letter code generated from the uri so that validation code can 
+               work in batches; the code could be generated by taking the first N characters from
+               the MD5
+               checksum of the uri (details TBD)
+            </td>
          </tr>
          <tr>
             <td class="feature-detail"><a href="#Site">Site</a></td>
@@ -775,6 +831,36 @@
             <td class="feature-detail"><a href="#Site.resourceID">Site.resourceID</a></td>
             <td class="feature-detail">attribute</td>
             <td class="feature-detail">resource identifier for the web service API of a site</td>
+         </tr>
+         <tr>
+            <td class="feature-detail"><a href="#SiteLocation">SiteLocation</a></td>
+            <td class="feature-detail">objectType</td>
+            <td class="feature-detail">location of a file at a site; instances are created and maintained in a global inventory</td>
+         </tr>
+         <tr>
+            <td class="feature-detail"><a href="#SiteLocation.file">SiteLocation.file</a></td>
+            <td class="feature-detail">attribute</td>
+            <td class="feature-detail">reference to the file</td>
+         </tr>
+         <tr>
+            <td class="feature-detail"><a href="#SiteLocation.site">SiteLocation.site</a></td>
+            <td class="feature-detail">attribute</td>
+            <td class="feature-detail">reference to the site</td>
+         </tr>
+         <tr>
+            <td class="feature-detail"><a href="#StorageLocation">StorageLocation</a></td>
+            <td class="feature-detail">objectType</td>
+            <td class="feature-detail">storage location of a file; instances are created and maintained in a storage site</td>
+         </tr>
+         <tr>
+            <td class="feature-detail"><a href="#StorageLocation.file">StorageLocation.file</a></td>
+            <td class="feature-detail">attribute</td>
+            <td class="feature-detail">reference to the file</td>
+         </tr>
+         <tr>
+            <td class="feature-detail"><a href="#StorageLocation.storageID">StorageLocation.storageID</a></td>
+            <td class="feature-detail">attribute</td>
+            <td class="feature-detail">storage site/system internal identifier</td>
          </tr>
       </table>
       <hr>
