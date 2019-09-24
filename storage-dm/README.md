@@ -17,7 +17,7 @@ Development starts with the UML diagrams and the current version may be ahead of
 <img alt="Storage System UML - development version" style="border-width:0" 
 src="https://github.com/pdowler/storage/raw/master/storage-dm/src/main/resources/storage-inventory-0.2.png" />
 
-# File.fileID thoughts...
+# File.uri
 This URI is a globally unique identifier that is typically known to and may be defined by some other system 
 (e.g. an Artifact.uri in CAOM or storageID in a storage-system backed VOSpace like ivo://cadc.nrc.ca/vault). 
 
@@ -92,19 +92,42 @@ Global inventory (may be one or more):
 
 Rather than just accumulate new instances of File, the harvested File may be a new File or an existing File 
 at a new site that has to be merged into the global inventory. Thus, File.lastModified in a global inventory is not 
-equal to the values at individual storage sites; it is the last time the global state of that file changed (by
-being sync'ed to a storage site).
+equal to the values at individual storage sites. TBD: should global store the min(lastModified from sites)? max(lastModified from sites)? act like origin and store curent timestamp?.
 
-The metadata-sync tools could allow for global policy so one could maintain a global view of a defined set of file. This
-might be useful so vault could maintain it's own global view and not rely on an external global inventory service for 
-transfer negotiation.
+The metadata-sync tools could allow for global policy so one could maintain a global view of a defined set of file. 
+This might be useful so vault could maintain it's own global view and not rely on an external global inventory service 
+for transfer negotiation.
 
 <img alt="global storage inventory deployment" style="border-width:0" 
 src="https://github.com/pdowler/storage/raw/master/storage-dm/docs/global-inventory-deploy.png" />
 
-# patterns and incomplete thoughts
+# high level features
 
-basic put/get/delete:
+1. one or more independent global inventory(ies) of all files and their locations (including partial)
+
+2. arbitrary organisation of archive files (File.uri) == arbitrary mirroring policies at each site
+
+3. scalable validation using uri, uriBucket: CAOM vs storage, global vs site, site vs global
+
+4. multiple storage backends in use at any one time
+
+# transition plan features (applies now and to future transitions)
+
+1. no throw-away transition tools or development (CT: continuous transition)
+
+2. no "big switch": start with AD site, operate with AD in parallel with other sites until we no longer want/need AD
+
+# what's NOT included in design/plan
+
+1. monitoring, control, or config of back end storage systems (use their tools)
+
+2. monitoring or control of processes and services (use kubernetes)
+
+3. reporting (get logs from containers)
+
+# patterns, ideas, and incomplete thoughts...
+
+files (basic put/get/delete):
 - PUT /srv/files/{uri}
 - GET /srv/files/{uri}
 - DELETE /srv/files/{uri}
@@ -114,7 +137,7 @@ basic put/get/delete:
 - vault transfer negotiation maps vos {path} to DataNode.uuid and then negotiates with global storage inventory
 - vault implementation could maintain it's own global inventory of vault files
 
-negotiated transfers:
+locate (transfer negotiation):
 - negotiate with global to get: locate available copies and return URL(s), order by proximity
 - negotiate with global to put: sites that are writable, order by proximity; try to match policy?
 - negotiate with global to delete: same as get
@@ -131,13 +154,13 @@ overwrite a file at storage site:
 how does delete file get propagated?
 - delete from any site with a copy; delete harvested to global and then to other sites
 - process harvested delete by File UUID so it is decoupled from put new file with same name
-- negotiate with global to find a copy to delete, delete one or more copies
+- negotiate with global to find a copy to delete, delete one or more copies?
 - race condition - delete and put at different sites: the put always wins
 - delete by File UUID is idempotent so duplicate DeletedFile records are ok
 
 how does global learn about copies at sites other than the original?
 - when a site syncs a file (adds a local StorageLocation): update the File.lastModified
-- global metadata-sync from site(s) will see this, retrieve the File, and add a local SiteLocation
+- global metadata-sync from site(s) will see this and add a local SiteLocation
 - the File.id and File.metaChecksum never change during sync
 - global's view of the File.lastModified will be the latest change at all sites, but that doesn't stop it from getting an
   "event" out of order and still merging in the new SiteLocation
@@ -156,10 +179,17 @@ how does global inventory validate vs site?  how does site validate vs global (w
 - remove File(s) with no SiteLocation??
 - use uriBucket prefix to batch validation
 
+how does a storage site validate vs local storage system?
+- compare List of File+StorageLocation vs storage content using storageID
+- use uriBucket prefix to batch validation??
+- if file in inventory & not in storage: pending file-sync job
+- if file in storage and not in inventory && can generate File.uri: query global, create StorageLocation, maybe create File
+- if file in storage and not in inventory && cannot generate File.uri: delete from storage? alert operator?
+
 what happens when a storage site detects that a File.contentChecksum != storage.checksum?
 - if copies-in-global: delete the File and the stored file and re-sync w.r.t policy?
 - if !copies-in-global: mark it bad && human intervention
 
-harvesting (global) should detect if site File.lastModified stream is out of whack
+should harvesting detect if site File.lastModified stream is out of whack?
 - non-monotonic, except for volatile head of stack?
 - clock skew
