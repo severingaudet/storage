@@ -115,6 +115,7 @@ incremental metadata propagation and robust metadata validation
 
 scalable validation using uri, uriBucket
 - CAOM vs storage
+- vault vs storage
 - global vs site
 - site vs global
 
