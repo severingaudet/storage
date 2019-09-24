@@ -103,27 +103,39 @@ src="https://github.com/pdowler/storage/raw/master/storage-dm/docs/global-invent
 
 # high level features
 
-1. one or more independent global inventory(ies) of all files and their locations (including partial)
+one or more independent global inventory(ies) of all files and their locations
+- specialised global inventory(ies) can be created (eg vault can have it's own copy of global)
 
-2. arbitrary organisation of archive files (File.uri) == arbitrary mirroring policies at each site
+arbitrary organisation of archive files (File.uri)
+- enables arbitrary mirroring policies at each site
 
-3. scalable validation using uri, uriBucket: CAOM vs storage, global vs site, site vs global
+incremental metadata propagation and robust metadata validation
+- site to global
+- global to site
 
-4. multiple storage backends in use at any one time
+scalable validation using uri, uriBucket
+- CAOM vs storage
+- global vs site
+- site vs global
 
-# transition plan features (applies now and to future transitions)
+multiple storage backends in use at any one time
 
-1. no throw-away transition tools or development (CT: continuous transition)
+# transition plan features
 
-2. no "big switch": start with AD site, operate with AD in parallel with other sites until we no longer want/need AD
+no throw-away transition tools or development (CT: continuous transition)
+
+no "big switch": 
+- start with AD site
+- operate with AD in parallel with other (types of) sites
+- eventually retire AD?
 
 # what's NOT included in design/plan
 
-1. monitoring, control, or config of back end storage systems (use their tools)
+monitoring, control, or config of back end storage systems (use their tools)
 
-2. monitoring or control of processes and services (use kubernetes)
+monitoring or control of processes and services (use kubernetes)
 
-3. reporting (get logs from containers)
+reporting (get logs from containers)
 
 # patterns, ideas, and incomplete thoughts...
 
