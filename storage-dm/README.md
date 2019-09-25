@@ -155,21 +155,29 @@ files (basic put/get/delete):
 - PUT /srv/files/{uri}
 - GET /srv/files/{uri}
 - DELETE /srv/files/{uri}
-- cannot modify File.uri without delete+put with new uri (chose wisely)
-- mirroring policy at sites will be based on information in the File.uri (chose wisely)
+- mirroring policy at sites will (mostly) be based on information in the File.uri (chose wisely)
+- no API to modify File.uri without delete+put with new uri (chose wisely); it is technically feasible to modify (like--)
+- no API to modify other File metadata (supply correct metadata in PUT); it is feasible to use POST for metadata update
 - cannot directly access vault files at a site - must use transfer negotiation (no real change)
-- vault transfer negotiation maps vos {path} to DataNode.uuid and then negotiates with global storage inventory
-- vault implementation could maintain it's own global inventory of vault files
 
 locate (transfer negotiation):
 - negotiate with global to get: locate available copies and return URL(s), order by proximity
-- negotiate with global to put: sites that are writable, order by proximity; try to match policy?
+- negotiate with global to put: sites that are writable, try to match policy? (like--)
 - negotiate with global to delete: same as get
 - global should implement heartbeat check with sites so negotiated transfers likely to work
+- vault transfer negotiation maps vos {path} to DataNode.uuid and then negotiates with global
+- vault implementation could maintain it's own global inventory of vault files (policy)
 
-overwrite a file at storage site:
-- write with new File UUID, File.lastModified/metaChecksum must change, global harvests, sites harvest
-- add DeletedFile record for old UUID
+how does a curl/wget user download a file?
+- an endpoint like the files endpoint that supports GET only can be implemented as part of global deployment
+- this is a convenience feature so it is not part of the core design (just for clarity)
+- a simple "I'm feeling lucky" implementation could just redirect to the highest ranked negotiated transfer
+- something with a marginally better chance of success could use have the storage site files endpoint redirect 
+  failed GETs back to global, but that introduces tighter coupling between global and sites (like--)
+
+overwrite a file at storage site: atomic delete + create
+- write a new File (new UUID), File.lastModified/metaChecksum must change, global harvests, sites harvest
+- add DeletedFile record with old UUID
 - before global harvests: eventually consistent (but detectable by clients in principle)
 - after global harvests: consistent (only new file accessible, sites limited until sync'ed
 - direct access: other storage sites would deliver previous version of file until they sync
@@ -194,6 +202,7 @@ how would a temporary cache instance at a site be maintained?
 - site could delete once global has other SiteLocation(s), update File.lastModified so global will detect 
   and remove SiteLocation
 - files could sit there orphaned if no one else wants/copies them
+- this feature is not planned, just speculation
 
 how does global inventory validate vs site?  how does site validate vs global (w.r.t. policy)?
 - get list of File(s) from the site and compare with File+SiteLocation
