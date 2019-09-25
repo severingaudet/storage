@@ -4,6 +4,43 @@
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
 Creative Commons Attribution-ShareAlike 4.0 International License</a>.
 
+# high level features
+
+one or more independent global inventory(ies) of all files and their locations
+- specialised global inventory(ies) can be created (eg vault can have it's own copy of global)
+
+arbitrary organisation of archive files (File.uri)
+- enables arbitrary mirroring policies at each site
+
+incremental metadata propagation and robust metadata validation
+- site to global
+- global to site
+
+scalable validation using uri, uriBucket
+- CAOM vs storage
+- vault vs storage
+- global vs site
+- site vs global
+
+multiple storage backends in use at any one time
+
+# transition plan features
+
+no throw-away transition tools or development (CT: continuous transition)
+
+no "big switch": 
+- start with AD site
+- operate with AD in parallel with other (types of) sites
+- eventually retire AD?
+
+# what's NOT included in design/plan
+
+monitoring, control, or config of back end storage systems (use their tools)
+
+monitoring or control of processes and services (use kubernetes)
+
+reporting (get logs from containers)
+
 # storage-dm
 Storage Inventory (SI) Data Model
 
@@ -31,15 +68,15 @@ policies.
 
 For resolvable ivo URIs, the resourceID can be extracted by dropping the query string. The resourceID 
 can be found in a registry and allows clients to find data services. This form allows for generic tools to resolve
-and sync files from external systems. Example usage of equivalent fileID values:
-
-ivo://cadc.nrc.ca/{archive}?{path}/{filename} *resolvable archive*
-
-ivo://cadc.nrc.ca/archive?{path}/{filename} *resolvable multi-archive data centre*
+and access files from external systems. Example usage of equivalent fileID values:
 
 ad:{archive}/{filename} *classic*
 
 cadc:{path}/{filename} *new*
+
+ivo://cadc.nrc.ca/{archive}?{path}/{filename} *resolvable archive*
+
+ivo://cadc.nrc.ca/{srv}?{path}/{filename} *resolvable multi-archive service*
 
 The directly resolveable fileID (ivo scheme) can be used to extract a resourceID (up to the ?) and perform a registry lookup.
 The resulting record would contain at least two capabilities: a transfer negotiation or a files endpoint and a permissions endpoint. Classic (ad) and basic (cadc scheme) usage is to use the a shortcut scheme that is configured to be equivalent to the multi-archive data centre. The first form (with the archive in the resourceID) allows for changes from a common to a different
@@ -58,7 +95,7 @@ Since we need to support mast and vault schemes (at least), it is assumed that w
 forward and support (configure) the "ad" scheme for backwards compatibility. 
 
 # external services
-Services that make up the storage site or global inventory depend on other CADC services. The registry lookup API permits caching; this is already implemented and effective. The permissions API could be designed to support caching. The user and group APIs could be modified to support caching. Caching: solve a problem by adding another problem.
+Services that make up the storage site or global inventory depend on other CADC services. The registry lookup API permits caching; this is already implemented and effective. The permissions API could be designed to support caching or mirrors. The user and group APIs could be modified to support caching or mirroring. Caching: solve a problem by adding another problem.
 
 <img alt="storage site deployment" style="border-width:0" 
 src="https://github.com/pdowler/storage/raw/master/storage-dm/docs/storage-external-services.png" />
@@ -100,43 +137,6 @@ for transfer negotiation.
 
 <img alt="global storage inventory deployment" style="border-width:0" 
 src="https://github.com/pdowler/storage/raw/master/storage-dm/docs/global-inventory-deploy.png" />
-
-# high level features
-
-one or more independent global inventory(ies) of all files and their locations
-- specialised global inventory(ies) can be created (eg vault can have it's own copy of global)
-
-arbitrary organisation of archive files (File.uri)
-- enables arbitrary mirroring policies at each site
-
-incremental metadata propagation and robust metadata validation
-- site to global
-- global to site
-
-scalable validation using uri, uriBucket
-- CAOM vs storage
-- vault vs storage
-- global vs site
-- site vs global
-
-multiple storage backends in use at any one time
-
-# transition plan features
-
-no throw-away transition tools or development (CT: continuous transition)
-
-no "big switch": 
-- start with AD site
-- operate with AD in parallel with other (types of) sites
-- eventually retire AD?
-
-# what's NOT included in design/plan
-
-monitoring, control, or config of back end storage systems (use their tools)
-
-monitoring or control of processes and services (use kubernetes)
-
-reporting (get logs from containers)
 
 # patterns, ideas, and incomplete thoughts...
 
