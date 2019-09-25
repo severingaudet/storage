@@ -6,11 +6,15 @@ Creative Commons Attribution-ShareAlike 4.0 International License</a>.
 
 # high level features
 
+arbitrary organisation of archive files (File.uri)
+- file organisation supports mirroring policy
+
 one or more independent global inventory(ies) of all files and their locations
 - specialised global inventory(ies) can be created (eg vault can have it's own copy of global)
 
-arbitrary organisation of archive files (File.uri)
-- enables arbitrary mirroring policies at each site
+one or more storage sites with local inventory and data storage
+- arbitrary mirroring policies at each site
+- different back end storage implementation (assumed off-the-shelf)
 
 incremental metadata propagation and robust metadata validation
 - site to global
@@ -33,13 +37,20 @@ no "big switch":
 - operate with AD in parallel with other (types of) sites
 - eventually retire AD?
 
-# what's NOT included in design/plan
+# what's NOT included
 
-monitoring, control, or config of back end storage systems (use their tools)
+quotas, allocations, resource management
 
-monitoring or control of processes and services (use kubernetes)
+monitoring, control, or config of back end storage systems
+- use their tools
 
-reporting (get logs from containers)
+monitoring or control of processes and services
+- use kubernetes
+
+reporting
+- get logs from containers
+- query site inventory
+- query global inventory
 
 # storage-dm
 Storage Inventory (SI) Data Model
@@ -70,18 +81,18 @@ For resolvable ivo URIs, the resourceID can be extracted by dropping the query s
 can be found in a registry and allows clients to find data services. This form allows for generic tools to resolve
 and access files from external systems. Example usage of equivalent fileID values:
 
-ad:{archive}/{filename} *classic*
+**ad:{archive}/{filename}** *classic*
 
-cadc:{path}/{filename} *new*
+**cadc:{path}/{filename}** *new*
 
-ivo://cadc.nrc.ca/{archive}?{path}/{filename} *resolvable archive*
+**mast:{path}/{filename}** *in use now*
 
-ivo://cadc.nrc.ca/{srv}?{path}/{filename} *resolvable multi-archive service*
+ivo://cadc.nrc.ca/{archive}?{path}/{filename} *resolvable archive?*
+
+ivo://cadc.nrc.ca/{srv}?{path}/{filename} *resolvable multi-archive service?*
 
 The directly resolveable fileID (ivo scheme) can be used to extract a resourceID (up to the ?) and perform a registry lookup.
-The resulting record would contain at least two capabilities: a transfer negotiation or a files endpoint and a permissions endpoint. Classic (ad) and basic (cadc scheme) usage is to use the a shortcut scheme that is configured to be equivalent to the multi-archive data centre. The first form (with the archive in the resourceID) allows for changes from a common to a different
-permission service (for that archive); the second form is the resolvable version of current practice. The short forms (ad and cadc schemes) require configuration at storage sites to map the scheme (e.g. cadc -> ivo://cadc.nrc.ca/archive) for capability lookup. For externally harvested and sync'ed CAOM artifacts, we would use the URI as-is in the fileID. For the simple form 
-(e.g. mast:HST/path/to/file.fits) we would configure the scheme (mast) as a shortcut to the CAOM archive metadata service.
+The resulting record would contain at least two capabilities: a transfer negotiation or a files endpoint and a permissions endpoint. Classic (ad) and proposed new (cadc scheme) usage is to use a shortcut scheme that is configured to be equivalent to the multi-archive data centre. The first form (with the archive in the resourceID) allows for changes from a common to a different permission service (for that archive); the second form is the resolvable version of current practice. The short forms (ad and cadc schemes) require configuration at storage sites to map the scheme (e.g. cadc -> ivo://cadc.nrc.ca/archive) for capability lookup. For externally harvested and sync'ed CAOM artifacts, we would use the URI as-is in the fileID. For the simple form (e.g. mast:HST/path/to/file.fits) we would configure the scheme (mast) as a shortcut to the CAOM archive metadata service.
 
 Validation of CAOM versus storage requires querying CAOM (1+ collections) and storage (single namespace) and 
 cross-matching URIs to look for anomolies.
