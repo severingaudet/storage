@@ -58,12 +58,14 @@ Storage space is required before the CEPH site software stack is available.
 ## Urgent Treasury Board or NRC changes
 TB or NRC request major CLF changes that will divert developer resources away from the storage project.
 
- * Likelihood: ???
+ * Likelihood: Low
  * Impact: High
 
  ### Mitigations
 
-1. Requires input from JJ?
+1. Find a minimally acceptable adoption of CLF until storage project is completed.
+2. Contract hiring of individuals to focus on CLF.
+3. Divert effort from other project areas to enable CLF conversions.
 
  
  
